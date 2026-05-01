@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vite cache
+.vite/
+
+# Optional: coverage reports
+coverage/
+
+# Optional: local test cache
+.cache/
+
+# Optional: lock files (keep ONE, ignore others if needed)
+# Uncomment depending on your package manager:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
