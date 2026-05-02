@@ -38,6 +38,7 @@ function App() {
       <ChatPage
         selectedLanguage={selectedLanguage}
         isDemo={isDemo}
+        setShowChat={setShowChat}
       />
     );
   }
@@ -53,6 +54,7 @@ function App() {
       setShowChat={setShowChat}
       setShowLogin={setShowLogin}
       isLoggedIn={isLoggedIn}
+      setIsDemo={setIsDemo}
     />
   );
 

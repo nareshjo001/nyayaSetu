@@ -165,7 +165,8 @@ function DashboardScreen({
   setShowChat, 
   isLoggedIn,
   setShowLogin,
-  setShowDashboard 
+  setShowDashboard,
+  setIsDemo 
 }) {
   const content = contentByLanguage[selectedLanguage] ?? contentByLanguage.en;
   const selectedBanner = bannerByLanguage[selectedLanguage] ?? engBanner;
@@ -202,7 +203,7 @@ function DashboardScreen({
           </div>
         </div>
       </aside>
-
+      
       <section className="dashboard-content">
         <div className="hero-card">
           <div className="hero-split">
@@ -227,7 +228,10 @@ function DashboardScreen({
                 (
                   <button
                     className="secondary"
-                    onClick={() => handleClick('secondary')}
+                    onClick={() => {
+                      handleClick('secondary');
+                      setIsDemo(true);
+                    }}
                   >
                     <Sparkles size={19} /> {content.secondaryAction}
                   </button>

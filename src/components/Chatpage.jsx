@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./chat.css";
 import logo from "../assets/app_logo.png";
-import { Scale, Plus, PanelLeft, Mic, Send } from "lucide-react";
+import { ArrowLeftCircle, Scale, Plus, PanelLeft, Mic, Send } from "lucide-react";
 
 const DEMO_OPTIONS = [
   "FIR Filing Guidance",
@@ -9,7 +9,63 @@ const DEMO_OPTIONS = [
   "Tenant Rights & Dispute",
 ];
 
-export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
+const TEXT = {
+  en: {
+    appName: "NyayaSetu",
+    newChat: "New Chat",
+    logout: "Logout",
+    simple: "Simple",
+    detailed: "Detailed",
+    placeholder: "Ask about Indian law...",
+    rename: "Rename",
+    clear: "Clear",
+    delete: "Delete",
+  },
+
+  hi: {
+    appName: "न्यायसेतु",
+    newChat: "नई चैट",
+    logout: "लॉग आउट",
+    simple: "सरल",
+    detailed: "विस्तृत",
+    placeholder: "कानूनी प्रश्न पूछें...",
+    rename: "नाम बदलें",
+    clear: "साफ करें",
+    delete: "हटाएं",
+  },
+
+  ta: {
+    appName: "நியாயசேது",
+    newChat: "புதிய உரையாடல்",
+    logout: "வெளியேறு",
+    simple: "எளியது",
+    detailed: "விரிவானது",
+    placeholder: "சட்ட கேள்விகளை கேளுங்கள்...",
+    rename: "பெயர் மாற்று",
+    clear: "அழி",
+    delete: "நீக்கு",
+  },
+};
+
+const DEMO_OPTIONS_MAP = {
+  en: [
+    "FIR Filing Guidance",
+    "Accessing Legal Aid",
+    "Tenant Rights & Dispute",
+  ],
+  hi: [
+    "एफआईआर दर्ज करने की जानकारी",
+    "मुफ्त कानूनी सहायता कैसे प्राप्त करें",
+    "किरायेदार अधिकार और विवाद",
+  ],
+  ta: [
+    "FIR பதிவு வழிகாட்டி",
+    "இலவச சட்ட உதவி பெறுவது எப்படி",
+    "குத்தகையாளர் உரிமைகள் & பிரச்சினைகள்",
+  ],
+};
+
+export default function ChatPage({ selectedLanguage, isDemo, goBack, setShowChat }) {
 
   const [sidebarOpen, setSidebarOpen] = useState(
     window.innerWidth > 768
@@ -18,6 +74,7 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
   const [menuOpen, setMenuOpen] = useState(null);
   const [renamingIndex, setRenamingIndex] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+  const [showDemoOptions, setShowDemoOptions] = useState(isDemo);
 
   const [chats, setChats] = useState(() => {
     const saved = localStorage.getItem("chat_history");
@@ -31,6 +88,21 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
   const [mode, setMode] = useState("simple");
 
   const messages = chats[activeChatIndex]?.messages || [];
+  const messagesEndRef = useRef(null);
+
+  const lang = localStorage.getItem("lang") || "en";
+  const t = TEXT[lang] || TEXT.en;
+  const DEMO_OPTIONS = DEMO_OPTIONS_MAP[lang] || DEMO_OPTIONS_MAP.en;
+
+  const scrollToBottom = (smooth = true) => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: smooth ? "smooth" : "auto",
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom(true);
+  }, [messages]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,17 +155,30 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
   };
 
   const handleDemoClick = (text) => {
-    updateChat([
-      ...messages,
-      { type: "user", text },
-      { type: "system", text: `Simulated response for: ${text}` },
-    ]);
+    const userMsg = { type: "user", text };
+
+    updateChat([...messages, userMsg]);
+
+    setShowDemoOptions(false); // hide options while loading
+
+    setTimeout(() => {
+      updateChat([
+        ...messages,
+        userMsg,
+        {
+          type: "system",
+          text: `Simulated response for: ${text}`,
+        },
+      ]);
+
+      setShowDemoOptions(true); // show options again
+    }, 800);
   };
 
   const newChat = () => {
     setChats([
       ...chats,
-      { title: "New Chat", messages: [] }
+      { title: t.newChat, messages: [] }
     ]);
     setActiveChatIndex(chats.length);
   };
@@ -137,10 +222,29 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
   <div className="chat-layout">
     <aside className={`chat-sidebar ${sidebarOpen ? "open" : "closed"}`}>
       <div className="sidebar-header">
-        <div className="chat-brand">
-          <Scale size={20}/>
+        <div className="sidebar-top-controls">
+          <div
+            className="back-btn chat-back-btn"
+            onClick={() => setShowChat(false)}
+          >
+            <ArrowLeftCircle />
+          </div>
+
+          <div
+            className="close-btn"
+            onClick={() => setSidebarOpen(false)}
+          >
+            ✕
+          </div>
+
         </div>
-        <span>NyayaSetu</span>
+
+        <div className="sidebar-brand">
+          <div className="chat-brand">
+            <Scale size={20} />
+          </div>
+          <span>{t.appName}</span>
+        </div>
       </div>
 
       <select
@@ -148,13 +252,13 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
         onChange={(e) => setMode(e.target.value)}
         className="mode-select"
       >
-        <option value="simple">Simple</option>
-        <option value="detailed">Detailed</option>
+        <option value="simple">{t.simple}</option>
+        <option value="detailed">{t.detailed}</option>
       </select>
 
       <button className="new-chat-btn" onClick={newChat}>
         <Plus size={20} />
-        New Chat
+        {t.newChat}
       </button>
 
       <div className="chat-history">
@@ -197,7 +301,7 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
                     setMenuOpen(null);
                   }}
                 >
-                  Rename
+                  {t.rename}
                 </button>
 
                 <button
@@ -206,7 +310,7 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
                     clearChatAt(i);
                   }}
                 >
-                  Clear
+                  {t.clear}
                 </button>
 
                 <button
@@ -216,7 +320,7 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
                     deleteChatAt(i);
                   }}
                 >
-                  Delete
+                  {t.delete}
                 </button>
               </div>
             )}
@@ -224,9 +328,11 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
         ))}
       </div>
 
-      <div className="sidebar-bottom">
-        <button>Logout</button>
-      </div>
+      {!isDemo && (
+        <div className="sidebar-bottom">
+          <button>{t.logout}</button>
+        </div>
+      )}
     </aside>
 
     <div className="chat-main">
@@ -254,19 +360,39 @@ export default function ChatPage({ selectedLanguage, isDemo, goBack }) {
               {msg.text}
             </div>
           ))}
+
+          <div ref={messagesEndRef} />
         </div>
+
+        {isDemo && (
+          <div className="demo-bottom">
+            <div className="demo-options-row">
+              {DEMO_OPTIONS.map((q, i) => (
+                <div
+                  key={i}
+                  className="demo-option"
+                  onClick={() => handleDemoClick(q)}
+                >
+                  {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="chat-input">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about Indian law, legal rights..."
+            placeholder={t.placeholder}
+            disabled={isDemo} 
           />
 
-          <button onClick={handleVoice}>
+          <button onClick={handleVoice} disabled={isDemo}>
             <Mic size={20} />
           </button>
-          <button onClick={sendMessage}>
+
+          <button onClick={sendMessage} disabled={isDemo}>
             <Send size={20} />
           </button>
         </div>

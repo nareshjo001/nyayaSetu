@@ -34,8 +34,59 @@
 
 .sidebar-header {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sidebar-top-controls {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  border: 1px solid rgba(13, 95, 51, 0.2);
+
+  font-size: 1rem;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #eefaf2;
+  border-color: #0d5f33;
+  transform: scale(1.05);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
   font-weight: 700;
+  font-size: 1rem;
+  color: #064e3b;
+}
+
+.close-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .close-btn {
+    display: flex;
+  }
 }
 
 .chat-brand {
@@ -318,20 +369,77 @@
   background: #059669;
 }
 
+.chat-input input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.chat-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.demo-bottom {
+  padding: 8px 14px;
+  border-top: 1px solid #e5ece7;
+  background: transparent;
+}
+
+.demo-options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-option {
+  background: #fff;
+  border: 1px solid rgba(13, 95, 51, 0.25);
+  color: #0d5f33;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-option:hover {
+  background: #eefaf2;
+  border-color: #0d5f33;
+  transform: translateY(-1px);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(13, 95, 51, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn:hover {
+  background: #eefaf2;
+  border-color: #0d5f33;
+  transform: scale(1.05);
+}
+
 @media (max-width: 768px) {
 
   .chat-sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100%;
+    height: 100dvh;
     width: 260px;
-
-    background: #fff;
-    z-index: 10000;
-
+    background: #ffffff;
+    z-index: 1000;
     transform: translateX(-100%);
-    transition: 0.3s ease;
+    transition: transform 0.3s ease;
   }
 
   .chat-sidebar.open {
@@ -339,16 +447,10 @@
   }
 
   .chat-layout {
-    height: 100dvh;
-    display: flex;
+    position: relative;
   }
 
   .chat-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    overflow: hidden;
+    margin-left: 0 !important;
   }
-
 }
